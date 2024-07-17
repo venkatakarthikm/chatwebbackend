@@ -23,6 +23,44 @@ const insertuser = async (request, response) => {
   }
 };
 
+const connections = async (request, response) => {
+  try {
+    const searchTerm = request.params.searchTerm;
+
+    // Find the network connections where either user1 or user2 matches the search term
+    const networks = await Networks.find({
+      $or: [
+        { 'user1.username': new RegExp(searchTerm, 'i') },
+        { 'user2.username': new RegExp(searchTerm, 'i') }
+      ]
+    });
+
+    if (networks.length === 0) {
+      response.status(200).send("No User found");
+    } else {
+      // Create an array to hold the user details of the other user in the network
+      const userPromises = networks.map(network => {
+        const otherUsername = network.user1.username.toLowerCase() === searchTerm.toLowerCase() ? network.user2.username : network.user1.username;
+        return Users.findOne({ username: otherUsername });
+      });
+
+      // Resolve all promises to get the user details
+      const users = await Promise.all(userPromises);
+
+      // Filter out null results (in case no user is found)
+      const filteredUsers = users.filter(user => user !== null);
+
+      if (filteredUsers.length === 0) {
+        response.status(200).send("No matching users found in networks");
+      } else {
+        response.json(filteredUsers);
+      }
+    }
+  } catch (error) {
+    response.status(500).send(error.message);
+  }
+};
+
 const searchuser = async (request, response) => {
   try {
     const searchTerm = request.params.searchTerm;
@@ -112,4 +150,5 @@ const updateseen = async (req, res) => {
   }
 };
 
-module.exports = { checkuserlogin, insertuser, searchuser, searchconnection,sendmessage,viewchat,updateseen };
+
+module.exports = { checkuserlogin, insertuser, searchuser, searchconnection,sendmessage,viewchat,updateseen,connections };

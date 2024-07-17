@@ -10,6 +10,7 @@ userrouter.post("/searchconnection", usercontroller.searchconnection);
 userrouter.post("/sendmessage",usercontroller.sendmessage);
 userrouter.get("/viewchat/:networkId", usercontroller.viewchat);
 userrouter.post("/updateseen/:_i",usercontroller.updateseen);
+userrouter.get("/connections/:searchTerm", usercontroller.connections);
 
 
 

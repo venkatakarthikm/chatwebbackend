@@ -10,7 +10,7 @@ router.post("/searchconnection/",usercontroller.searchconnection)
 router.post("/sendmessage",usercontroller.sendmessage)
 router.get("/viewchat/:networkId",usercontroller.viewchat)
 router.post("/updateseen/:_i",usercontroller.updateseen)
-
+router.get("/connections/:searchTerm", usercontroller.connections)
 
 
 module.exports = router
